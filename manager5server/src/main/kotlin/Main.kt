@@ -1,7 +1,10 @@
-fun main(args: Array<String>) {
-    println("Hello World!")
+import library.cnserver.CnServer
+import library.cnnavigation.CnNavigationInterceptor
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+fun main(args: Array<String>) {
+    val server = CnServer()
+        .setPort(6666)
+        .setInterceptor(CnNavigationInterceptor())
+        .open()
+//    server.close()
 }

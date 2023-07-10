@@ -1,7 +1,5 @@
 package library.cnnavigation.model
 
-import kotlin.jvm.Throws
-
 data class CnResponse(
     val id: String?,
     val method: CnMethod?,
@@ -29,5 +27,9 @@ data class CnResponse(
         if (code == null) {
             throw Exception("Missing response code")
         }
+    }
+
+    companion object {
+        fun ok(data: Any?): CnResponse = CnResponse(null, null, null, null, null, data, 200)
     }
 }

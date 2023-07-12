@@ -1,26 +1,24 @@
 package controller
 
-import library.cnnavigation.annotation.Controller
-import library.cnnavigation.annotation.Get
-import library.cnnavigation.annotation.Post
-import library.cnnavigation.annotation.Put
+import library.cnnavigation.annotation.*
+import library.cnnavigation.model.CnRequest
 import library.cnnavigation.model.CnResponse
 
 @Controller("/welcome")
 class WelcomeController {
 
     @Get
-    fun welcome(): CnResponse {
-        return CnResponse.ok("hello")
+    fun welcome(request: CnRequest, @Body auth: CnResponse?): CnResponse {
+        return CnResponse.ok(auth)
     }
 
     @Post
-    fun welcomePost(): CnResponse {
-        return CnResponse.ok("hello push")
+    fun welcomePost(@Param("auth") auth: String?): String? {
+        return null
     }
 
     @Put
-    fun welcomePut(): CnResponse {
-        return CnResponse.ok("hello put")
+    fun welcomePut(): String {
+        return "hello put"
     }
 }

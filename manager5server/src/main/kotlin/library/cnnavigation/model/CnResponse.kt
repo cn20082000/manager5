@@ -4,9 +4,8 @@ data class CnResponse(
     val id: String?,
     val method: CnMethod?,
     var endpoint: String?,
-    var params: Map<String, String>?,
-    var header: Map<String, String>?,
-    val data: Any?,
+    var params: Map<String, Any?>?,
+    val body: Any?,
     val code: Int?,
 ) {
 
@@ -22,7 +21,6 @@ data class CnResponse(
 
         endpoint = endpoint ?: ""
         params = params ?: mapOf()
-        header = header ?: mapOf()
 
         if (code == null) {
             throw Exception("Missing response code")
@@ -30,6 +28,6 @@ data class CnResponse(
     }
 
     companion object {
-        fun ok(data: Any?): CnResponse = CnResponse(null, null, null, null, null, data, 200)
+        fun ok(data: Any?): CnResponse = CnResponse(null, null, null, null, data, 200)
     }
 }

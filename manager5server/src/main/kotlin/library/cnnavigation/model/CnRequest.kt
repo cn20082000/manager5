@@ -6,9 +6,8 @@ data class CnRequest(
     val id: String?,
     val method: CnMethod?,
     var endpoint: String?,
-    var params: Map<String, String>?,
-    var header: Map<String, String>?,
-    val data: Any?,
+    var params: Map<String, Any?>?,
+    val body: Any?,
 ) {
 
     @Throws(Exception::class)
@@ -23,6 +22,5 @@ data class CnRequest(
 
         endpoint = endpoint ?: ""
         params = params ?: mapOf()
-        header = header ?: mapOf()
     }
 }

@@ -1,5 +1,6 @@
 package library.cnnavigation
 
+import com.google.gson.GsonBuilder
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.ClassInfoList
@@ -9,6 +10,7 @@ import library.cnnavigation.annotation.*
 import library.cnnavigation.model.CnMethod
 import library.cnnavigation.model.CnRequest
 import library.cnnavigation.model.CnResponse
+import kotlin.math.min
 
 object CnNavigation {
     private val controllers: ClassInfoList by lazy {
@@ -23,17 +25,28 @@ object CnNavigation {
 
                 val method = findMethod(request, endpoint, controller)
                 if (method != null) {
-                    val result =
-                        method.loadClassAndGetMethod().invoke(CnInjector.inject(controller.loadClass())) as CnResponse
-                    return CnResponse(
-                        request.id,
-                        request.method,
-                        request.endpoint,
-                        request.params,
-                        request.header,
-                        result.data,
-                        result.code,
-                    )
+                    val parameters = processParameters(method, request)
+                    val result = method.loadClassAndGetMethod().invoke(CnInjector.inject(controller.loadClass()), *parameters.toTypedArray())
+
+                    if (result is CnResponse) {
+                        return CnResponse(
+                            request.id,
+                            request.method,
+                            request.endpoint,
+                            request.params,
+                            result.body,
+                            result.code,
+                        )
+                    } else {
+                        return CnResponse(
+                            request.id,
+                            request.method,
+                            request.endpoint,
+                            request.params,
+                            result,
+                            if (result != null) 200 else 404,
+                        )
+                    }
                 }
             }
         }
@@ -43,10 +56,101 @@ object CnNavigation {
             request.method,
             request.endpoint,
             request.params,
-            request.header,
             null,
             404,
         )
+    }
+
+    private fun processParameters(method: MethodInfo, request: CnRequest): List<Any?> {
+        val result = mutableListOf<Any?>()
+
+        val parameterInfo = method.parameterInfo
+        val parameters = method.loadClassAndGetMethod().parameters
+        for (index in 0 until min(parameterInfo.size, parameters.size)) {
+            if (parameters[index].type == CnRequest::class.java) {
+                result.add(request)
+                continue
+            }
+
+            val paramAnno = parameterInfo[index].getAnnotationInfo(Param::class.java)
+            if (paramAnno != null) {
+                val paramValue = paramAnno.parameterValues[0].value as String
+                if (request.params?.get(paramValue) is String && parameters[index].type == java.lang.String::class.java) {
+                    result.add(request.params?.get(paramValue))
+                    continue
+                }
+                if (request.params?.get(paramValue) is Double) {
+                    if (parameters[index].type == java.lang.Byte::class.java) {
+                        result.add((request.params?.get(paramValue) as Double).toLong().toByte())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Short::class.java) {
+                        result.add((request.params?.get(paramValue) as Double).toLong().toShort())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Integer::class.java) {
+                        result.add((request.params?.get(paramValue) as Double).toInt())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Long::class.java) {
+                        result.add((request.params?.get(paramValue) as Double).toLong())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Float::class.java) {
+                        result.add((request.params?.get(paramValue) as Double).toFloat())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Double::class.java) {
+                        result.add(request.params?.get(paramValue) as Double)
+                        continue
+                    }
+                }
+            }
+
+            val bodyAnno = parameterInfo[index].getAnnotationInfo(Body::class.java)
+            if (bodyAnno != null) {
+                if (request.body is String && parameters[index].type == java.lang.String::class.java) {
+                    result.add(request.body)
+                    continue
+                }
+                if (request.body is Double) {
+                    if (parameters[index].type == java.lang.Byte::class.java) {
+                        result.add(request.body.toLong().toByte())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Short::class.java) {
+                        result.add(request.body.toLong().toShort())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Integer::class.java) {
+                        result.add(request.body.toInt())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Long::class.java) {
+                        result.add(request.body.toLong())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Float::class.java) {
+                        result.add(request.body.toFloat())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Double::class.java) {
+                        result.add(request.body)
+                        continue
+                    }
+                }
+                if (request.body != null) {
+                    val gson = GsonBuilder().create()
+                    val bodyString = gson.toJson(request.body)
+
+                    result.add(gson.fromJson(bodyString, parameters[index].type))
+                    continue
+                }
+            }
+            result.add(null)
+        }
+
+        return result
     }
 
     private fun findMethod(

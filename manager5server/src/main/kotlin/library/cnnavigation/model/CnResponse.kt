@@ -4,6 +4,7 @@ data class CnResponse(
     val id: String?,
     val method: CnMethod?,
     var endpoint: String?,
+    var headers: MutableMap<String, Any?>?,
     var params: Map<String, Any?>?,
     val body: Any?,
     val code: Int?,
@@ -20,6 +21,7 @@ data class CnResponse(
         }
 
         endpoint = endpoint ?: ""
+        headers = headers ?: mutableMapOf()
         params = params ?: mapOf()
 
         if (code == null) {
@@ -28,6 +30,6 @@ data class CnResponse(
     }
 
     companion object {
-        fun ok(data: Any?): CnResponse = CnResponse(null, null, null, null, data, 200)
+        fun ok(data: Any?): CnResponse = CnResponse(null, null, null, null, null, data, 200)
     }
 }

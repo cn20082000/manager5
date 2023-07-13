@@ -1,10 +1,12 @@
+import library.cnnavigation.interceptor.CnJsonInterceptor
 import library.cnserver.CnServer
-import library.cnnavigation.CnNavigationInterceptor
+import library.cnnavigation.interceptor.CnNavigationInterceptor
 
 fun main(args: Array<String>) {
     val server = CnServer()
         .setPort(6666)
-        .setInterceptor(CnNavigationInterceptor())
+        .addInterceptor(CnJsonInterceptor())
+        .addInterceptor(CnNavigationInterceptor())
         .open()
 //    server.close()
 }

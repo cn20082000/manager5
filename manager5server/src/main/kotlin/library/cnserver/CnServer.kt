@@ -2,6 +2,8 @@ package library.cnserver
 
 import java.net.Inet4Address
 import java.net.ServerSocket
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class CnServer(
     private var port: Int = 55672,
@@ -15,7 +17,7 @@ class CnServer(
         return this
     }
 
-    fun setInterceptor(interceptor: CnInterceptor): CnServer {
+    fun addInterceptor(interceptor: CnInterceptor): CnServer {
         interceptors.add(interceptor)
         return this
     }
@@ -41,5 +43,9 @@ class CnServer(
         } catch (ex: Exception) {
             cnServerLog(ex)
         }
+    }
+
+    companion object {
+        val threadPool: ExecutorService = Executors.newFixedThreadPool(10)
     }
 }

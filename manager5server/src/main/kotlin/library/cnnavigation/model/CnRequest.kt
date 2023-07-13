@@ -1,11 +1,10 @@
 package library.cnnavigation.model
 
-import kotlin.jvm.Throws
-
 data class CnRequest(
     val id: String?,
     val method: CnMethod?,
     var endpoint: String?,
+    var headers: Map<String, Any?>?,
     var params: Map<String, Any?>?,
     val body: Any?,
 ) {
@@ -21,6 +20,7 @@ data class CnRequest(
         }
 
         endpoint = endpoint ?: ""
+        headers = headers ?: mapOf()
         params = params ?: mapOf()
     }
 }

@@ -12,6 +12,7 @@ open class CnServerProcess(
 ): CnThread() {
 
     private val printer: PrintWriter by lazy { PrintWriter(socket.getOutputStream(), true) }
+    private val reader: BufferedReader by lazy { BufferedReader(InputStreamReader(socket.getInputStream())) }
 
     init {
         cnServerLog("New client (${socket.remoteSocketAddress}) connected")
@@ -23,12 +24,13 @@ open class CnServerProcess(
 
     override fun loop() {
         try {
-            val reader = BufferedReader(InputStreamReader(socket.getInputStream()))
             val line = reader.readLine()
-            if (line != null && interceptors.isNotEmpty()) {
-                val result = interceptors.first().intercept(line, interceptors.subList(1, interceptors.size))
-                if (result != null) {
-                    send(result.toString())
+            CnServer.threadPool.submit {
+                if (line != null && interceptors.isNotEmpty()) {
+                    val result = interceptors.first().intercept(line, interceptors.subList(1, interceptors.size))
+                    if (result != null) {
+                        send(result.toString())
+                    }
                 }
             }
 

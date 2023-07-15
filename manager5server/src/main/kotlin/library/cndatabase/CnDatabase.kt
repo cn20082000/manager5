@@ -1,5 +1,8 @@
 package library.cndatabase
 
+import org.hibernate.Session
+import org.hibernate.cfg.Configuration
+import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 
@@ -46,5 +49,18 @@ object CnDatabase {
             cnDatabaseLog(ex)
         }
         return false
+    }
+
+    fun open(configFile: String): Session? = try {
+        val session = Configuration()
+            .configure(File(configFile))
+            .buildSessionFactory()
+            .openSession()
+        cnDatabaseLog("Open database success.")
+        session
+    } catch (ex: Exception) {
+        cnDatabaseLog(ex)
+        cnDatabaseLog("Open database failed.")
+        null
     }
 }

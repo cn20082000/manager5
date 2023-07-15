@@ -9,7 +9,6 @@ data class CnResponse(
     val body: Any?,
     val code: Int?,
 ) {
-
     @Throws(Exception::class)
     fun validate() {
         if (id.isNullOrEmpty()) {

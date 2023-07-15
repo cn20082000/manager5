@@ -6,7 +6,6 @@ import library.cnnavigation.model.CnResponse
 
 @Controller("/welcome")
 class WelcomeController {
-
     @Get
     fun welcome(request: CnRequest, @Body auth: CnResponse?): CnResponse {
         return CnResponse.ok(auth)

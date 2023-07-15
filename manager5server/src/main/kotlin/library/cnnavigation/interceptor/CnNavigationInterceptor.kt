@@ -6,7 +6,6 @@ import library.cnnavigation.model.CnRequest
 import library.cnserver.CnInterceptor
 
 class CnNavigationInterceptor : CnInterceptor {
-
     override fun intercept(message: Any?, next: List<CnInterceptor>): Any? {
         try {
             if (message is CnRequest) {

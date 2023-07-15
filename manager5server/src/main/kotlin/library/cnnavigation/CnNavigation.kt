@@ -75,6 +75,41 @@ object CnNavigation {
                 continue
             }
 
+            val headerAnno = parameterInfo[index].getAnnotationInfo(Header::class.java)
+            if (headerAnno != null) {
+                val headerValue = headerAnno.parameterValues[0].value as String
+                if (request.headers?.get(headerValue) is String && parameters[index].type == java.lang.String::class.java) {
+                    result.add(request.headers?.get(headerValue))
+                    continue
+                }
+                if (request.headers?.get(headerValue) is Double) {
+                    if (parameters[index].type == java.lang.Byte::class.java) {
+                        result.add((request.headers?.get(headerValue) as Double).toLong().toByte())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Short::class.java) {
+                        result.add((request.headers?.get(headerValue) as Double).toLong().toShort())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Integer::class.java) {
+                        result.add((request.headers?.get(headerValue) as Double).toInt())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Long::class.java) {
+                        result.add((request.headers?.get(headerValue) as Double).toLong())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Float::class.java) {
+                        result.add((request.headers?.get(headerValue) as Double).toFloat())
+                        continue
+                    }
+                    if (parameters[index].type == java.lang.Double::class.java) {
+                        result.add(request.headers?.get(headerValue) as Double)
+                        continue
+                    }
+                }
+            }
+
             val paramAnno = parameterInfo[index].getAnnotationInfo(Param::class.java)
             if (paramAnno != null) {
                 val paramValue = paramAnno.parameterValues[0].value as String

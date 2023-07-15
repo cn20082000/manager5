@@ -10,12 +10,11 @@ open class CnServerProcess(
     private val socket: Socket,
     private val interceptors: List<CnInterceptor>,
 ): CnThread() {
-
     private val printer: PrintWriter by lazy { PrintWriter(socket.getOutputStream(), true) }
     private val reader: BufferedReader by lazy { BufferedReader(InputStreamReader(socket.getInputStream())) }
 
     init {
-        cnServerLog("New client (${socket.remoteSocketAddress}) connected")
+        cnServerLog("New client (${socket.remoteSocketAddress}) connected.")
     }
 
     private fun send(message: String) {
@@ -25,7 +24,7 @@ open class CnServerProcess(
     override fun loop() {
         try {
             val line = reader.readLine()
-            CnServer.threadPool.submit {
+            CnServer.threadPool.execute {
                 if (line != null && interceptors.isNotEmpty()) {
                     val result = interceptors.first().intercept(line, interceptors.subList(1, interceptors.size))
                     if (result != null) {
@@ -47,7 +46,7 @@ open class CnServerProcess(
         } catch (ex: Exception) {
             cnServerLog(ex)
         }
-        cnServerLog("Client (${socket.remoteSocketAddress}) disconnected")
+        cnServerLog("Client (${socket.remoteSocketAddress}) disconnected.")
         terminate()
     }
 }

@@ -8,7 +8,6 @@ class CnServerListening(
     private val server: ServerSocket,
     private val interceptors: List<CnInterceptor>,
 ) : CnThread() {
-
     override fun loop() {
         try {
             val socket: Socket = server.accept()

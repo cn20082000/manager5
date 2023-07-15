@@ -8,7 +8,6 @@ data class CnRequest(
     var params: Map<String, Any?>?,
     val body: Any?,
 ) {
-
     @Throws(Exception::class)
     fun validate() {
         if (id.isNullOrEmpty()) {

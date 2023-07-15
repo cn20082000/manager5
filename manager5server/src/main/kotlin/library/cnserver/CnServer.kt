@@ -46,6 +46,6 @@ class CnServer(
     }
 
     companion object {
-        val threadPool: ExecutorService = Executors.newFixedThreadPool(10)
+        val threadPool: ExecutorService = Executors.newFixedThreadPool(5)
     }
 }

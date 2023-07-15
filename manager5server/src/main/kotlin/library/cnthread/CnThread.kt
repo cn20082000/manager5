@@ -4,7 +4,6 @@ package library.cnthread
  * Kể từ khi [start], khởi tạo một Thread mới chạy liên tục [loop] cho đến khi nó bị [terminate]
  */
 abstract class CnThread {
-
     private var runnable: CnRunnable? = null
     private var thread: Thread? = null
 
@@ -35,7 +34,6 @@ abstract class CnThread {
     private class CnRunnable(
         private val thread: CnThread,
     ) : Runnable {
-
         @Volatile
         private var running = true
 
